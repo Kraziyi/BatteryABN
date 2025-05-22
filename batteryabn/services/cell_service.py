@@ -72,12 +72,11 @@ class CellService:
             The type of test to process, by default None
         """
         cell = self.find_cell_by_name(cell_name)
-        project = cell.project
-
         if not cell:
             logger.error(f'Cell not found: {cell_name}')
             return
         
+        project = cell.project
         cycler_trs, vdf_trs = self.get_cycler_vdf_trs(cell, test_type)        
         # Process cell data
         processor.process(cycler_trs, vdf_trs, cell.project)
@@ -158,7 +157,7 @@ class CellService:
         tuple
             The images for the cell
         """
-        cell_data, cell_cycle_metrics, cell_data_vdf = self.get_processed_data(cell_name)
+        cell_data, cell_cycle_metrics, cell_data_vdf, _ = self.get_processed_data(cell_name)
         if not cell_data or not cell_cycle_metrics or not cell_data_vdf:
             logger.error(f'Processed data not found for cell: {cell_name}')
             return
@@ -193,8 +192,9 @@ class CellService:
         cell_data = self.filesystem_repository.load_from_local_pklgz(project.project_name, cell.cell_name, 'cell_data')
         cell_cycle_metrics = self.filesystem_repository.load_from_local_pklgz(project.project_name, cell.cell_name, 'cell_cycle_metrics')
         cell_data_vdf = self.filesystem_repository.load_from_local_pklgz(project.project_name, cell.cell_name, 'cell_data_vdf')
+        cell_data_rpt = self.filesystem_repository.load_from_local_pklgz(project.project_name, cell.cell_name, 'cell_data_rpt')
 
-        return cell_data, cell_cycle_metrics, cell_data_vdf
+        return cell_data, cell_cycle_metrics, cell_data_vdf, cell_data_rpt
 
     def get_data(self, cell_name: str, data_type: str):
         """
@@ -265,7 +265,7 @@ class CellService:
         dict
             Combined cell data
         """
-        cell_data, _, cell_data_vdf = self.get_processed_data(cell_name)
+        cell_data, _, cell_data_vdf, _ = self.get_processed_data(cell_name)
         if cell_data is None or cell_data_vdf is None:
             logger.error(f'Processed data not found for cell: {cell_name}')
             return
@@ -521,3 +521,5 @@ class CellService:
 
         return {"latest_test_name": tr_name, "timestamp": data_last_row[Const.TIMESTAMP], "capacity": data_last_row[Const.AHT],
                 "protocol": ccm_last_row[Const.PROTOCOL], "cycle_type": ccm_last_row[Const.CYCLE_TYPE]}
+    
+    #  Load the tr names based on cell name
