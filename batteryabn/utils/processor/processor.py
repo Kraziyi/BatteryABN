@@ -434,8 +434,9 @@ class Processor:
         )
 
         charge_start_idxs, discharge_start_idxs = self.find_cycle_idxs(t, i)
+        if len(charge_start_idxs) != 0 and len(discharge_start_idxs) != 0:
         # try: # won't work for half cycles (files with only charge or only discharge)
-        charge_start_idxs, discharge_start_idxs = self.match_charge_discharge(charge_start_idxs, discharge_start_idxs)
+            charge_start_idxs, discharge_start_idxs = self.match_charge_discharge(charge_start_idxs, discharge_start_idxs)
         # except Exception as e:
         #     logger.error(f"Error processing {tr.test_name}: failed to match charge discharge: {e}")
         #     pass
@@ -931,8 +932,6 @@ class Processor:
         """
         Method used for eSOH calculation
         """
-        logger.info(f"Type of ch_rpt: {type(ch_rpt)}")
-        logger.info(f"Type of ch_rpt data: {type(ch_rpt[Const.DATA])}")
         d_ch = ch_rpt[Const.DATA]
         d_dh = dh_rpt[Const.DATA]
         d_dh = d_dh.reset_index(drop=True)
@@ -1272,7 +1271,7 @@ class Processor:
         """
 
         # Extract the relevant columns from cell_data_vdf
-        cell_data_vdf = cell_data_vdf[[Const.TIMESTAMP, Const.EXPANSION, Const.EXPANSION_UM, Const.EXPANSION_STDDEV, Const.DRIVE_CURRENT, Const.EXPANSION_REF]]
+        cell_data_vdf = cell_data_vdf[[Const.TIMESTAMP, Const.EXPANSION, Const.EXPANSION_UM, Const.EXPANSION_STDDEV, Const.DRIVE_CURRENT, Const.EXPANSION_REF]] #Siegeljb Add additional columns here
         cell_data_vdf[Const.TIMESTAMP] = pd.to_datetime(cell_data_vdf[Const.TIMESTAMP], unit='ms')
         cell_data_vdf[Const.TIMESTAMP] = cell_data_vdf[Const.TIMESTAMP].dt.tz_localize(Const.DEFAULT_TIME_ZONE)
         cell_data = cell_data.sort_values(by=Const.TIMESTAMP)

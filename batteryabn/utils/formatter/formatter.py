@@ -222,14 +222,24 @@ class Formatter:
         if not calibration_parameters:
             return df
 
-        for calibration_parameter in calibration_parameters:
-            for protocol, parameters in calibration_parameter.items():
-                x1, x2, c = parameters
-                #TODO: Check this hard coded condition
-                if (self.metadata.get('Test Type') == '_F' and protocol == 'Formation') or (self.metadata.get('Test Type') != '_F' and protocol != 'Formation'):
-                    df[Const.CALIBRATION_X1] = x1
-                    df[Const.CALIBRATION_X2] = x2
-                    df[Const.CALIBRATION_C] = c
+        #TODO: Check this hard coded condition
+        # Arbin already calibrated, LDC N==100 in vdf parameter
+        ldc_n = int(df['ldc n'].iloc[0])
+        if ldc_n != 100:
+            for calibration_parameter in calibration_parameters:
+                for protocol, parameters in calibration_parameter.items():
+                    start_date, removal_date, x1, x2, c = parameters
+                    if start_date is not None and (
+                        (self.metadata.get('Test Type') == '_F' and protocol == 'Formation') or
+                        (self.metadata.get('Test Type') != '_F' and protocol != 'Formation')
+                    ):
+                        start_timestamp, removal_timestamp = Utils.date_str_to_unix_timestamp(start_date), Utils.date_str_to_unix_timestamp(removal_date)
+                        # Apply calibration only within the specified date range
+                        mask = (df[Const.TIMESTAMP] >= start_timestamp) & (df[Const.TIMESTAMP] <= removal_timestamp)
+                        logger.info(f'Mask for calibration data: {mask}')
+                        df.loc[mask, Const.CALIBRATION_X1] = x1
+                        df.loc[mask, Const.CALIBRATION_X2] = x2
+                        df.loc[mask, Const.CALIBRATION_C] = c
 
         return df
 
