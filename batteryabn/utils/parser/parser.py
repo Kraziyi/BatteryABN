@@ -208,8 +208,8 @@ class Parser:
         for row in calibration_csv:
             project = row[project_index]
             cell_number = row[cell_name_index]
-            start_date = row[start_date_index] if row[start_date_index] else '01/01/2010'
-            removal_date = row[removal_date_index] if row[removal_date_index] else '01/01/2030'
+            start_date = row[start_date_index] if row[start_date_index] else None
+            removal_date = row[removal_date_index] if row[removal_date_index] else '01/01/2050'
 
             x1 = float(row[x1_index]) if row[x1_index] else default_X1
             x2 = float(row[x2_index]) if row[x2_index] else default_X2
@@ -221,8 +221,8 @@ class Parser:
                 calibration_parameters[cell_name] = []
 
             protocol = row[protocol_index] if row[protocol_index] else 'DEFAULT'
-            calibration_parameters[cell_name].append({protocol: (x1, x2, c)})
-            # calibration_parameters[cell_name].append((start_date, removal_date, x1, x2, c))
+            # calibration_parameters[cell_name].append({protocol: (x1, x2, c)})
+            calibration_parameters[cell_name].append({protocol:(start_date, removal_date, x1, x2, c)})
         self.calibration_parameters = calibration_parameters
         
     def __get_test_name(self, file_path: str) -> str:

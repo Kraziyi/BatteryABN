@@ -420,7 +420,26 @@ class Utils:
         hours, minutes, seconds = map(float, time_string.split(":"))
         total_seconds = int(hours * 3600 + minutes * 60 + seconds)
         return total_seconds
-    
+
+    @staticmethod
+    def date_str_to_unix_timestamp(date_str: str) -> int:
+        """
+        Convert a date string like '1/1/2024' to a Unix timestamp in milliseconds.
+
+        Parameters:
+        - date_str (str): A string representing a date, e.g. '1/1/2024' or '01/01/2024'.
+
+        Returns:
+        - int: Unix timestamp in milliseconds.
+        """
+        # Parse the date string into a datetime object
+        dt = datetime.strptime(date_str, '%m/%d/%Y')
+        
+        # Convert to Unix timestamp in milliseconds
+        unix_ts_ms = int(dt.timestamp() * 1000)
+        
+        return unix_ts_ms
+
     @staticmethod
     def datetime_to_unix_timestamp(dt: datetime) -> int:
         """
