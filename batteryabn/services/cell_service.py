@@ -86,6 +86,9 @@ class CellService:
         # Genrate images for processed data
         img_cell, img_ccm, img_ccm_aht, img_cell_html, img_ccm_html, img_ccm_aht_html = viewer.plot(processor.cell_data, processor.cell_cycle_metrics, processor.cell_data_vdf, cell_name)
 
+        cell.calibration_c = processor.cell_data_vdf.iloc[-1][Const.CALIBRATION_C]
+        cell.calibration_x1 = processor.cell_data_vdf.iloc[-1][Const.CALIBRATION_X1]
+        cell.calibration_x2 = processor.cell_data_vdf.iloc[-1][Const.CALIBRATION_X2]
         # # Update cell data
         # cell.cell_data = Utils.gzip_pikle_dump(processor.cell_data)
         # cell.cell_cycle_metrics = Utils.gzip_pikle_dump(processor.cell_cycle_metrics)

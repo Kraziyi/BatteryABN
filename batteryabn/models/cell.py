@@ -15,6 +15,11 @@ class Cell(db.Model):
     project_name = db.Column(db.String, db.ForeignKey('projects.project_name'))
     project = db.relationship("Project", back_populates="cells")
 
+    #Latest sanity check data for calibration data
+    calibration_x1 = db.Column(db.Float, nullable=True)
+    calibration_x2 = db.Column(db.Float, nullable=True)
+    calibration_c = db.Column(db.Float, nullable=True)
+
     # Binary data fields
     cell_data = db.Column(db.LargeBinary, nullable=True)
     cell_cycle_metrics = db.Column(db.LargeBinary, nullable=True)
